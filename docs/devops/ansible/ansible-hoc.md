@@ -193,6 +193,8 @@ ansible 192.168.8.120 -m file -a 'path=/tmp/test2 state=absent'
 ##传输的过程中修改权限为644所有者修改为root
 ansible 192.168.8.120 -m copy -a 'src=/etc/ansible/ansible.cfg dest=/usr/local/src/ owner=root group=root mode=644'
 
+##传输的过程中修改权限为644所有者修改为root,如果目标文件存在，就备份
+
 ansible 192.168.8.120 -m copy -a 'backup=yes src=/etc/fstab dest=/usr/local/src/ansible.cfg owner=root group=root mode=644'
 
 ansible 192.168.8.120 -m copy -a 'content="just a test!" dest=/usr/local/src/test.txt'
@@ -219,9 +221,12 @@ ansible test -m yum -a 'name="@Development tools" state=present'
 ansible test -m yum -a 'name=http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm state=present'
 ```
 
-### 2.7 service模块
+### 2.7 服务管理模块
 
 用于管理服务
+systemd：类似于systemctl Centos7以上
+service:适用于Centos6及以下
+
 该模块包含如下选项：
 
 - arguments：给命令行提供一些选项
@@ -236,9 +241,39 @@ ansible test -m yum -a 'name=http://nginx.org/packages/centos/6/noarch/RPMS/ngin
 使用示例：
 
 ```
-ansible test -m service -a "name=httpd state=started enabled=yes"
-asnible test -m service -a "name=foo pattern=/usr/bin/foo state=started"
-ansible test -m service -a "name=network state=restarted args=eth0"
+##服务开机自启动
+ansible test -m systemd -a 'name=httpd state=started enabled=yes'
+
+asnible test -m systemd -a'name=foo pattern=/usr/bin/foo state=started'
+ 
+ansible test -m systemd -a 'name=network state=restarted args=eth0'
+
+
+
+#案例3 分发配置并重启服务
+
+1.分发m81上面的ansible.oldboylinux.cn.conf #静态页面分发到 web服务器
+2.重启ngx
+
+#01.创建ngx配置文件
+#82.创建站点目录及首页文件,并写入内容#03.重启服务 ngx
+#01.创建ngx配置文件
+
+ansible -i hostsweb -m copy -a 'src=ansible.test.com.conf dest=/etc/nginx/conf.d/ backup=yes'
+#02.创建站点目录及首页文件，并写入内容
+ansible -i hosts web -m file -a 'path=/app/code/ansible/ state=directory'
+ansible -i hosts web -m file -a 'path=/app/code/ansible/index.html state=touch'
+ansible -i hosts web -m shell- a 'echo ansible>/app/code/ansible/index.html'
+ansible -i hosts web -m systemd -a 'name=nginx state=reloaded'
+
+curl -H Host:ansible.test.com 192.168.100.12
+
+
+
+
+
+
+
 ```
 
 ### 2.8 cron模块
@@ -451,4 +486,5 @@ localhost | SUCCESS => {
 > https://www.cnblogs.com/breezey/p/8811187.html
 >
 > https://blog.51cto.com/cloumn/blog/1544
+
 
