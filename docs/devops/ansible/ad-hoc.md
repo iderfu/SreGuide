@@ -184,13 +184,19 @@ ansible 192.168.8.120 -m file -a 'path=/tmp/test2 state=absent'
 
 示例如下：
 
+##注意：ansible中对于路径   data data/ 的区别
+
+/data 目录+目录内容
+/data/ 目录的内容
+
 ```
+##传输的过程中修改权限为644所有者修改为root
 ansible 192.168.8.120 -m copy -a 'src=/etc/ansible/ansible.cfg dest=/usr/local/src/ owner=root group=root mode=644'
 
 ansible 192.168.8.120 -m copy -a 'backup=yes src=/etc/fstab dest=/usr/local/src/ansible.cfg owner=root group=root mode=644'
 
 ansible 192.168.8.120 -m copy -a 'content="just a test!" dest=/usr/local/src/test.txt'
-
+##分发/data/ 目录（不推荐）到所有机器 推荐传输目录，导报然后传输即可
 ansible 192.168.8.120 -m copy -a 'src=/data dest=/usr/local/src/'
 
 ansible 192.168.8.120 -m copy -a 'src=/data/ dest=/usr/local/src/'
@@ -445,3 +451,4 @@ localhost | SUCCESS => {
 > https://www.cnblogs.com/breezey/p/8811187.html
 >
 > https://blog.51cto.com/cloumn/blog/1544
+
