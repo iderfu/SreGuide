@@ -207,6 +207,12 @@ ansible 192.168.8.120 -m copy -a "src=/mine/sudoers dest=/etc/sudoers validate='
 ```
 
 ### 2.6 yum模块
+配置yum源：yum_repository
+通过yum安装软件：yum
+
+
+yum源模块yumm repository
+
 
 使用yum包管理器来管理软件包，其选项有：
 
@@ -486,5 +492,6 @@ localhost | SUCCESS => {
 > https://www.cnblogs.com/breezey/p/8811187.html
 >
 > https://blog.51cto.com/cloumn/blog/1544
+
 
 
